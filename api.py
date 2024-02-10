@@ -5,8 +5,13 @@ import datetime
 
 SECRET_KEY = 'super-secret-key'
 
-
 app = Flask(__name__)
+
+# Hardcoded credentials (for demonstration purposes)
+VALID_CREDENTIALS = {
+    'email': 'pierre@palenca.com',
+    'password': 'MyPwdChingon123'
+}
 
 
 @app.route('/')
@@ -37,7 +42,7 @@ def uber_login():
         return jsonify(response), 400
 
     # Authenticate user
-    if email == 'pierre@palenca.com' and password == 'MyPwdChingon123':
+    if email == VALID_CREDENTIALS['email'] and password == VALID_CREDENTIALS['password']:
         # Create JWT token
         access_token = jwt.encode(
             {'email': email, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
@@ -52,6 +57,48 @@ def uber_login():
         response = {
             'message': 'CREDENTIALS_INVALID',
             'details': 'Incorrect username or password'
+        }
+        return jsonify(response), 401
+
+
+@app.route('/uber/profile/<access_token>', methods=['GET'])
+def uber_profile(access_token):
+    try:
+        # Decode JWT token to retrieve email
+        payload = jwt.decode(access_token, SECRET_KEY, algorithms=['HS256'])
+        email = payload['email']
+
+        # Check if the email matches the valid credentials
+        if email == VALID_CREDENTIALS['email']:
+            # Assuming you have some profile data to return
+            profile_data = {
+                'name': 'Pierre',
+                'email': email,
+                'age': 30
+                # Add more profile data as needed
+            }
+            response = {
+                'message': 'SUCCESS',
+                'platform': 'uber',
+                'profile': profile_data
+            }
+            return jsonify(response), 200
+        else:
+            response = {
+                'message': 'CREDENTIALS_INVALID',
+                'details': 'Incorrect token'
+            }
+            return jsonify(response), 401
+    except jwt.ExpiredSignatureError:
+        response = {
+            'message': 'TOKEN_EXPIRED',
+            'details': 'Token has expired'
+        }
+        return jsonify(response), 401
+    except jwt.InvalidTokenError:
+        response = {
+            'message': 'INVALID_TOKEN',
+            'details': 'Invalid token provided'
         }
         return jsonify(response), 401
 
