@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "hephaestus"
+version = "0.0.1"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flask = "^3.0.2"
+pyjwt = "^2.8.0"
+pytest = "^8.0.0"
+requests = "^2.31.0"
+requests-html = "^0.10.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
