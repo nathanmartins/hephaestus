@@ -14,7 +14,7 @@ VALID_CREDENTIALS = {
 }
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def hello():
     return 'Hello Palenca'
 
